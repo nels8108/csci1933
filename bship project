@@ -1,0 +1,107 @@
+import java.util.Scanner;
+public class BattleShipBoard {
+	private String[][] bShipBoard;
+	private int hits;
+	private int misses;
+	private int redundantStrikes;
+	private boolean debug = false;
+	
+	public void setHits(int hits){
+		this.hits = hits;
+	}
+	public int getHits(){
+		return this.hits;
+	}
+	public void setMisses(int misses){
+		this.misses = misses;
+	}
+	public int getMisses(){
+		return this.misses;
+	}
+	public void setRedundantStrikes(int redundantStrikes){
+		this.redundantStrikes = redundantStrikes;
+	}
+	public int getRedundantStrikes(){
+		return this.redundantStrikes;
+		
+	}
+	
+	public void setBShipBoard(int row, int col, String info){
+		this.bShipBoard[row][col] = info;
+	}
+	public BattleShipBoard(int row, int col){
+		this.bShipBoard = new String[row][col];
+	}
+	public void enableDebug(){
+		this.debug = true;
+		System.out.println("Test/Debug mode enabled");
+	}
+	
+	public static void main(String[] args){
+		int ships = 0;
+		int mines = 0;
+		int turns = 0;
+		boolean gameover = false;
+		boolean validBoardSize = false;
+		System.out.println("Welcome to battleship!");
+		Scanner s = new Scanner(System.in);
+		System.out.println("Please enter the size of the board in whole numbers.  Press enter after the first number is entered");
+		int row = s.nextInt();
+		int col = s.nextInt();
+		while(validBoardSize == false){
+			if(row*col < 9){
+				System.out.println("Invalid board size, board too small");
+				System.out.println("Please re-enter the board size");
+				row = s.nextInt();
+				col = s.nextInt();
+			}
+			else if(row*col<16){
+				ships = 1;
+				mines = 1;
+				validBoardSize = true;
+			}
+			else if(row*col < 36){
+				ships = 2;
+				mines = 2;
+				validBoardSize = true;
+			}
+			else if(row*col <=100){
+				ships = 3;
+				mines = 2;
+				validBoardSize = true;
+			}
+			else{
+				System.out.println("Invalid board size, board too large");
+				System.out.println("Please re-enter the board size");
+				row = s.nextInt();
+				col = s.nextInt();
+			}
+		}
+		BattleShipBoard board = new BattleShipBoard(row,col);
+		System.out.println("Test/Debug mode? T/F");
+		String test = s.next();
+		if(test.equalsIgnoreCase("T")){
+			board.enableDebug();
+		}
+		else if(test.equalsIgnoreCase("F")){
+			System.out.println("Let the game begin!");
+		}
+		else{
+			System.out.println("Invalid answer");
+		}
+		
+		// need to tell the user what the top left and bottom right corner coordinates are
+		
+		while (gameover == false){ // starting the turn loop
+			turns++;
+			
+		
+		}
+			
+		
+		
+		
+		
+		}
+		
+	}
