@@ -1,0 +1,108 @@
+package p2;
+
+import java.util.Scanner;
+import java.io.PrintWriter;
+import java.io.File;
+
+public class ContactList {
+	private int ptr = -1;
+	private Contact[] contactArray;
+	private int addIterator=-1;
+	private Scanner s;
+	private PrintWriter p = null;
+	public boolean add(Contact a){
+		if (addIterator < contactArray.length-1){
+			this.ptr++;
+			this.addIterator++;
+			
+			
+			contactArray[this.addIterator] = a;
+			return true;
+		}
+		else
+			return false;
+		
+		
+		
+	}
+	public Contact find(String a){
+		boolean firstTry = true;
+		for(int i = 0; i < contactArray.length ; i++){
+			if (contactArray[i].getName().contains(a)){
+				this.ptr = i;
+				firstTry = false;
+				return contactArray[i];
+			}
+				
+		}
+		if (firstTry = true)
+			this.ptr = 0;
+			for(int i = 0; i < contactArray.length ; i++){
+				if (contactArray[i].getName().contains(a)){
+					this.ptr = i;
+					return contactArray[i];
+				}
+					
+			}
+			
+		return null;
+	}
+	public Contact remove(){
+		Contact temp = this.contactArray[ptr];
+		this.contactArray[ptr] = null;
+		return temp;
+	}
+	public ContactList(){
+		contactArray = new Contact[20];
+		
+	}
+	public ContactList(int length){
+		contactArray = new Contact[length];
+	}
+	public int getLength(){
+		return this.contactArray.length;
+	}
+	public boolean toWrite(String fileNameToWrite){
+		try {   // test for Exception in call to File constructor
+			p = new PrintWriter(new File(fileNameToWrite));
+			}
+			catch (Exception e) {}
+			for(int i =0;i<contactArray.length;i++)
+				p.println(contactArray[i].toString());
+			p.close(); 
+			return true;// close the file to preserve what is written to it
+	}
+	public boolean toRead(String fileNameToRead){
+		try {   // test for Exception in call to File constructor
+			s = new Scanner(new File(fileNameToRead));
+			}   // end try block for File usage
+			catch (Exception e) {}
+		String currentLine = s.nextLine();
+		int comma1;
+		int comma2;
+		int comma3;
+		while(s.hasNext() == true){
+			for(int i = 0; i < currentLine.length(); i++){
+				
+			}
+		}
+		return true;
+	}
+	public static void main(String[] args){
+		Contact n = new Contact("neil", 34354, "555 one way", "super awesome");
+		Contact c = new Contact("charles", 45613, "bamf", "has a pirate ship");
+		Contact m = new Contact("neil", 34354, "165132 dsadsa", "this wont compare!");
+		ContactList lonng = new ContactList();
+		ContactList sshort = new ContactList(2);
+		/*System.out.println(lonng.add(n));
+		System.out.println(lonng.add(c));
+		System.out.println(lonng.add(m));*/
+		System.out.println(sshort.getLength());
+		System.out.println(sshort.add(n));
+		System.out.println(sshort.add(c));
+		System.out.println(sshort.add(m));
+		System.out.println(sshort.find("charles").toString());
+		//System.out.println(sshort.remove());
+		sshort.toWrite("data.txt");
+	}
+}
