@@ -1,0 +1,68 @@
+package p2;
+
+public class Contact {
+	private String name;
+	private long phone;
+	private String address;
+	private String comments;
+	
+	public String getName(){
+		return this.name;
+	}
+	public void setName(String name){
+		this.name = name;
+		
+	}
+	public long getPhone(){
+		return this.phone;
+	}
+	public void setPhone(long phone){
+		this.phone = phone;
+	
+	}
+	public String getAddress(){
+		return this.address;
+	}
+	public void setAddress(String address){
+		this.address = address;
+	}
+	public String getComments(){
+		return this.comments;
+	}
+	public void setComments(String comments){
+		this.comments = comments;
+		
+	}
+	public String toString(){
+		String returnString = this.name + ",\n" + this.phone + ",\n" + this.address + ",\n"+ this.comments;
+		return returnString;
+	}
+	public boolean equals(Contact compareTo){
+		if(this.name.equals(compareTo.getName()) || this.phone == compareTo.getPhone()){
+			return true;
+		}
+		else
+			return false;
+	}
+	public Contact(String name, long phone, String address, String comments){
+		this.name = name;
+		this.phone = phone;
+		this.address = address;
+		this.comments = comments;
+	}
+	public static void main(String[] args){
+		Contact n = new Contact("neil", 34354, "555 one way", "super awesome");
+		System.out.println(n.getAddress());
+		System.out.println(n.getName());
+		System.out.println(n.getComments());
+		System.out.println(n.getPhone());
+		System.out.println(n.toString());
+		Contact c = new Contact("charles", 45613, "bamf", "has a pirate ship");
+		Contact m = new Contact("neil", 34354, "165132 dsadsa", "this wont compare!");
+		System.out.println(n.equals(m));
+		System.out.println(n.equals(c));
+		
+		
+		
+	}
+}
