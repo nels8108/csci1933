@@ -1,5 +1,6 @@
 package p1;
 import java.util.Scanner;
+import java.util.Arrays;
 public class BattleShipBoard {
 	private String[][] bShipBoard;
 	private int hits;
@@ -9,6 +10,30 @@ public class BattleShipBoard {
 	private int rowLength;
 	private int colLength;
 	
+	private int r;
+	private int c;
+	private int ships;
+	private int mines;
+
+	public int getMines(){
+		return this.mines;
+	}
+	public void setMines(int mines){
+		this.mines = mines;
+	}
+
+	public int getShips(){
+		return this.ships;
+	}
+	public void setShips(int ships){
+		this.ships = ships;
+	}
+	private int getR(){
+		return this.r;
+	}
+	private int getC(){
+		return this.c;
+	}
 	public void addHit(){
 		this.hits++;
 	}
@@ -45,8 +70,88 @@ public class BattleShipBoard {
 	public void setBShipBoard(int row, int col, String info){
 		this.bShipBoard[row][col] = info;
 	}
+	public boolean placeVertical(int midY , int midX){
+		if (midY == 0){
+			midY += 1;
+		}
+		else if(midY == this.bShipBoard.length-1){
+			midY -= 1;
+		}
+		if (checkAround(midY,midX)){
+			if(checkAround (midY+1,midX)){
+				if (checkAround (midY-1,midX)){
+					this.bShipBoard[midY][midX] = "s";
+					this.bShipBoard[midY+1][midX] = "s";
+					this.bShipBoard[midY-1][midX] = "s";
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	public boolean placeHorizontal(int midY , int midX){
+		if (midX == 0){
+			midX += 1;
+		}
+		else if(midX == this.bShipBoard[0].length-1){
+			midX -= 1;
+		}
+		if (checkAround(midY,midX)){
+			if(checkAround (midY,midX+1)){
+				if (checkAround (midY,midX-1)){
+					this.bShipBoard[midY][midX] = "s";
+					this.bShipBoard[midY][midX+1] = "s";
+					this.bShipBoard[midY][midX-1] = "s";
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	public boolean checkAround(int x, int y){
+		if (this.bShipBoard[x][y] == null){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	public void setSpin(int midY, int midX){
+		double num = Math.random();
+		int placedShips = 0;
+		while(placedShips < ships){
+			if (num >= .5){
+				if (placeHorizontal(midY , midX) == true){
+				placedShips += 1;
+				}
+		}
+			else{
+				if (placeVertical(midY, midX) == true){
+					placedShips += 1;
+			}	
+		}
+			midY = (int)Math.floor(Math.random() * r);
+			midX = (int)Math.floor(Math.random() * c);
+	}
+	}
 	public BattleShipBoard(int row, int col){
 		this.bShipBoard = new String[row][col];
+		int midY = (int)Math.floor(Math.random() * row);
+		int midX = (int)Math.floor(Math.random() * col);
+		if(row*col<=16){
+			ships = 1;
+			mines = 1;
+		}
+		else if(row*col <= 36){
+			ships = 2;
+			mines = 2;
+		}
+		else if(row*col <=100){
+			ships = 3;
+			mines = 3;
+		}
+		setSpin(midY , midX);
+		System.out.println(Arrays.deepToString(bShipBoard));
 	}
 	public void setDebug(String a){
 		if(a.contains("true") == true){
@@ -182,7 +287,7 @@ public class BattleShipBoard {
 		System.out.println("Please enter the size of the board in whole numbers.  Press enter after the first number is entered");
 		int row = s.nextInt();
 		int col = s.nextInt();
-		while(validBoardSize == false){
+		/*while(validBoardSize == false){
 			if(row*col < 9){
 				System.out.println("Invalid board size, board too small");
 				System.out.println("Please re-enter the board size");
@@ -214,9 +319,26 @@ public class BattleShipBoard {
 				row = s.nextInt();
 				col = s.nextInt();
 			}
+		}*/
+		while(validBoardSize == false){
+			if(row*col < 9){
+				System.out.println("Invalid board size, board too small");
+				System.out.println("Please re-enter the board size");
+				row = s.nextInt();
+				col = s.nextInt();
+			}
+			else if(row*col > 100){
+				System.out.println("Invalid board size, board too large");
+				System.out.println("Please re-enter the board size");
+				row = s.nextInt();
+				col = s.nextInt();
+			}
+			else
+				validBoardSize = true;
 		}
+		BattleShipBoard board = new BattleShipBoard(row, col);
 		// empty board created
-		BattleShipBoard board = new BattleShipBoard(row,col);
+		//BattleShipBoard board = new BattleShipBoard(row,col);
 		
 		// debug mode enabled
 		System.out.println("Test/Debug mode? T/F");
@@ -237,10 +359,10 @@ public class BattleShipBoard {
 		System.out.println("The top left coordinares are going to be 0 0, and the bottom right coordinates are going to be " + (row-1) + " " + (col-1));
 		
 		//board setup  - charbel to implement random
-		board.setBShipBoard(1, 2, "s");
-		board.setBShipBoard(2, 2, "s");
-		board.setBShipBoard(3, 2, "s");
-		board.setBShipBoard(1,0,"m");
+		//board.setBShipBoard(1, 2, "s");
+		//board.setBShipBoard(2, 2, "s");
+		//board.setBShipBoard(3, 2, "s");
+		//board.setBShipBoard(1,0,"m");
 		board.setColLength();
 		board.setRowLength();
 		while (gameover == false){ // starting the turn loop
