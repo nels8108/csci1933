@@ -1,4 +1,4 @@
-package p1;
+//Neil Nelson 4646143 nels8108  Charbel Estephan estep021@umn.edu
 import java.util.Scanner;
 import java.util.Arrays;
 public class BattleShipBoard {
@@ -9,30 +9,187 @@ public class BattleShipBoard {
 	private boolean debug = false;
 	private int rowLength;
 	private int colLength;
-	
-	private int r;
-	private int c;
 	private int ships;
 	private int mines;
 
-	public int getMines(){
-		return this.mines;
-	}
-	public void setMines(int mines){
-		this.mines = mines;
-	}
 
-	public int getShips(){
-		return this.ships;
+	
+	public void setTopEdge(){ //sets the top edge of the board to "te" which stands for top edge, excludes the corners
+		for(int i = 1;i<this.colLength;i++){
+			this.setBShipBoard(0, i, "te");
+		}
 	}
-	public void setShips(int ships){
-		this.ships = ships;
+	public void setLeftEdge(){ //sets the left edge of the board to "le" which stands for left edge, excludes the corners
+		for(int i = 1;i<this.rowLength;i++){
+			this.setBShipBoard(i, 0, "le");
+		}
 	}
-	private int getR(){
-		return this.r;
+	public void setRightEdge(){
+		for(int i = 1 ;i<this.rowLength;i++){ // sets the right edge
+			this.setBShipBoard(i,this.colLength, "re");
+		}
 	}
-	private int getC(){
-		return this.c;
+	public void setBottomEdge(){
+		for(int i =1;  i<this.colLength;i++){ //sets the bottom edge
+			this.setBShipBoard(this.rowLength, i , "be");
+		}
+	}
+	public void setRowLength(){
+		this.rowLength = (this.bShipBoard.length)-1;
+	}
+	public void setColLength(){
+		this.colLength = (this.bShipBoard[0].length)-1;
+		
+	}
+	public void setBShipBoard(int row, int col, String info){
+		this.bShipBoard[row][col] = info;
+	}
+	public void setCorners(){  // sets all the corners as "c" so we can build a case later that doesn't allow for placing a ship there
+		this.setBShipBoard(0,0,"c");
+		this.setBShipBoard(0, this.colLength, "c");
+		this.setBShipBoard(this.rowLength, 0, "c");
+		this.setBShipBoard(this.rowLength, this.colLength, "c");
+		
+	}
+	public void placeShip(){
+		boolean coordsWork = false;
+		while( coordsWork == false){
+			int midY = (int)Math.floor(Math.random() * (this.rowLength+1));  //rando coords
+			int midX = (int)Math.floor(Math.random() * (this.colLength+1));
+			double verticalOrHorizontalDouble = Math.random();  // deciding randomly whether it should be horizontal or vertical, if this doesn't work, it reloops and chooses another combination
+			String verticalOrHorizontal;
+			if(verticalOrHorizontalDouble > 0.5 ){
+				verticalOrHorizontal = "V";}
+			else{
+				verticalOrHorizontal = "H";
+			}	
+			if(this.bShipBoard[midY][midX].equalsIgnoreCase("n") == true){ //"n" case
+				if(this.checkForCollisions(midY, midX, verticalOrHorizontal) == false){
+					if(verticalOrHorizontal.equalsIgnoreCase("H") == true){//horizontal placement
+						this.setBShipBoard(midY, midX, "s");
+						this.setBShipBoard(midY, midX+1, "s");
+						this.setBShipBoard(midY, midX-1, "s");
+						coordsWork=true;
+					}
+					else if(verticalOrHorizontal.equalsIgnoreCase("V") == true){ // vertical placement
+						this.setBShipBoard(midY, midX, "s");
+						this.setBShipBoard(midY+1, midX, "s");
+						this.setBShipBoard(midY-1, midX, "s");
+						coordsWork=true;
+					}
+				}
+			}
+			else if(this.bShipBoard[midY][midX] == "c"){// corner case
+				//do nothing, wait for re-loop, can't place ship in corners
+			}
+			else if(this.bShipBoard[midY][midX] == "te" || this.bShipBoard[midY][midX] == "be"){ // top or bottom, can only be horizontal
+				verticalOrHorizontal = "H";
+				if(this.checkForCollisions(midY, midX, verticalOrHorizontal) == false){ // horizontal placement
+					this.setBShipBoard(midY, midX, "s");
+					this.setBShipBoard(midY, midX+1, "s");
+					this.setBShipBoard(midY, midX-1, "s");
+					coordsWork=true;
+				}
+			}
+			else if(this.bShipBoard[midY][midX] == "le" || this.bShipBoard[midY][midX] == "re"){ //left or right, can only be vertical
+				verticalOrHorizontal = "V";
+				if(this.checkForCollisions(midY, midX, verticalOrHorizontal) == false){ //vertical placement
+					this.setBShipBoard(midY, midX, "s");
+					this.setBShipBoard(midY+1, midX, "s");
+					this.setBShipBoard(midY-1, midX, "s");
+					coordsWork=true;
+				}
+			}
+			
+			else if(this.bShipBoard[midY][midX] == "s"){//ship already there
+				//do nothing, wait for re-loop
+			}
+			
+	}
+	}
+	
+	public void placeMine(){
+		boolean minecoordsWork = false;
+		while( minecoordsWork == false){
+			int midY = (int)Math.floor(Math.random() * this.rowLength+1);  //rando coords
+			int midX = (int)Math.floor(Math.random() * this.colLength+1);
+			if(this.bShipBoard[midY][midX].equalsIgnoreCase("s") == true || this.bShipBoard[midY][midX].equalsIgnoreCase("m") == true){
+				//do nothing, wait for re-loop
+			}
+			else{
+				this.bShipBoard[midY][midX] = "m";
+				minecoordsWork =true;
+			}
+		}
+		
+	}
+	public boolean checkForCollisions(int y, int x, String verticalOrHorizontal){ // returns true if there will be collisions with other ships
+		if(verticalOrHorizontal.equalsIgnoreCase("H") == true){//horizontal check
+			
+			if(this.bShipBoard[y][x+1].equalsIgnoreCase("s") || this.bShipBoard[y][x-1].equalsIgnoreCase("s") ){
+				return true;
+			}		
+		}
+		else if(verticalOrHorizontal.equalsIgnoreCase("V") == true){ // vertical check
+			if(this.bShipBoard[y+1][x].equalsIgnoreCase("s") || this.bShipBoard[y-1][x].equalsIgnoreCase("s") ){
+				return true;
+			}
+		}
+		
+			
+		return false;
+	}	
+
+	public void setupBoard(){ 
+		this.setColLength();
+		this.setRowLength();
+		this.setCorners();
+		this.setTopEdge();
+		this.setLeftEdge();
+		this.setRightEdge();
+		this.setBottomEdge();
+		for(int i = 1; i<this.rowLength; i++){ //this puts "n"s in every spot that is null in the inner square of the board
+			for(int j = 1; j<this.colLength;j++){
+				this.bShipBoard[i][j] = "n";
+			}
+		}
+		
+		int i =0;
+		while(i < this.ships ){  //takes how many ships needed and places that many
+			this.placeShip();
+			i++;
+		}
+		
+		i=0;
+		while(i< this.mines){ //takes how many mines needed and places that many
+			this.placeMine();
+			i++;
+		}
+			
+	
+	}
+	public BattleShipBoard(int col, int row){
+		this.bShipBoard = new String[col][row];
+		
+		if(row*col<=16){
+			this.ships = 1;
+			this.mines = 1;
+			
+		}
+		else if(row*col <= 36){
+			this.ships = 2;
+			this.mines = 2;
+			
+		}
+		else if(row*col <=100){
+			this.ships = 3;
+			this.mines = 3;
+			
+		}
+		
+		this.setupBoard(); //calls a help function that calls all the pre-req methods for setting up the board correctly
+		
+	
 	}
 	public void addHit(){
 		this.hits++;
@@ -60,103 +217,11 @@ public class BattleShipBoard {
 		return this.colLength;
 	}
 	
-	public void setRowLength(){
-		this.rowLength = (this.bShipBoard.length)-1;
-	}
-	public void setColLength(){
-		this.colLength = (this.bShipBoard[0].length)-1;
-		
-	}
-	public void setBShipBoard(int row, int col, String info){
-		this.bShipBoard[row][col] = info;
-	}
-	public boolean placeVertical(int midY , int midX){
-		if (midY == 0){
-			midY += 1;
-		}
-		else if(midY == this.bShipBoard.length-1){
-			midY -= 1;
-		}
-		if (checkAround(midY,midX)){
-			if(checkAround (midY+1,midX)){
-				if (checkAround (midY-1,midX)){
-					this.bShipBoard[midY][midX] = "s";
-					this.bShipBoard[midY+1][midX] = "s";
-					this.bShipBoard[midY-1][midX] = "s";
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	public boolean placeHorizontal(int midY , int midX){
-		if (midX == 0){
-			midX += 1;
-		}
-		else if(midX == this.bShipBoard[0].length-1){
-			midX -= 1;
-		}
-		if (checkAround(midY,midX)){
-			if(checkAround (midY,midX+1)){
-				if (checkAround (midY,midX-1)){
-					this.bShipBoard[midY][midX] = "s";
-					this.bShipBoard[midY][midX+1] = "s";
-					this.bShipBoard[midY][midX-1] = "s";
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	public boolean checkAround(int x, int y){
-		if (this.bShipBoard[x][y] == null){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
-	public void setSpin(int midY, int midX){
-		double num = Math.random();
-		int placedShips = 0;
-		while(placedShips < ships){
-			if (num >= .5){
-				if (placeHorizontal(midY , midX) == true){
-				placedShips += 1;
-				}
-		}
-			else{
-				if (placeVertical(midY, midX) == true){
-					placedShips += 1;
-			}	
-		}
-			midY = (int)Math.floor(Math.random() * r);
-			midX = (int)Math.floor(Math.random() * c);
-	}
-	}
-	public BattleShipBoard(int row, int col){
-		this.bShipBoard = new String[row][col];
-		int midY = (int)Math.floor(Math.random() * row);
-		int midX = (int)Math.floor(Math.random() * col);
-		if(row*col<=16){
-			ships = 1;
-			mines = 1;
-		}
-		else if(row*col <= 36){
-			ships = 2;
-			mines = 2;
-		}
-		else if(row*col <=100){
-			ships = 3;
-			mines = 3;
-		}
-		setSpin(midY , midX);
-		System.out.println(Arrays.deepToString(bShipBoard));
-	}
-	public void setDebug(String a){
+	public void setDebug(String a){  //setting the debug and notifying the user
 		if(a.contains("true") == true){
 			this.debug = true;
 			System.out.println("Test/Debug mode enabled");
+			System.out.println(Arrays.deepToString(bShipBoard));
 		}
 		else if (a.contains("false") == true){
 			this.debug = false;
@@ -169,11 +234,7 @@ public class BattleShipBoard {
 		return this.debug;
 	}
 	
-	public String boardSearch(String toSearchFor){
-		String a = "p";
-		return  a;
-	}
-	public boolean insideBoardCheck(int row, int col){
+	public boolean insideBoardCheck(int row, int col){  //checks that coordinates are inside the board
 		if( row > this.rowLength || col > this.colLength){
 			return false;
 		}
@@ -185,10 +246,7 @@ public class BattleShipBoard {
 		}
 		
 	}
-	public boolean checkRedundantStrike(int row, int col){
-		if(this.bShipBoard[row][col] == null){
-			return false;
-		}
+	public boolean checkRedundantStrike(int row, int col){ //checking for a redundant strike
 		if(this.bShipBoard[row][col].contains("h") == true){
 			return true;
 		}
@@ -196,26 +254,20 @@ public class BattleShipBoard {
 			return false;
 	}
 	public boolean checkIfShipHit(int row,int col){
-		if(this.bShipBoard[row][col] == null){
-			return false;
-		}
 		if(this.bShipBoard[row][col].equalsIgnoreCase("s")){
 			return true;
 		}
 		else
 			return false;
 	}
-	public boolean checkIfMineHit(int row,int col){
-		if(this.bShipBoard[row][col] == null){
-			return false;
-		}
+	public boolean checkIfMineHit(int row,int col){ // checks if the coordinates hit a mine
 		if(this.bShipBoard[row][col].equalsIgnoreCase("m")){
 			return true;
 		}
 		else
 			return false;
 	}
-	public boolean checkIfVeryClose(int row,int col){
+	public boolean checkIfVeryClose(int row,int col){ //checking if coordinates are very close to a ship
 		if(insideBoardCheck(row-1,col-1) == true){
 			if(checkIfShipHit(row-1,col-1) == true){
 				return true;
@@ -239,7 +291,7 @@ public class BattleShipBoard {
 		
 		return false;
 	}
-	public boolean checkIfClose(int row,int col){
+	public boolean checkIfClose(int row,int col){  // checking if coordinates are close to a ship
 		if(insideBoardCheck(row-2,col-2) == true){
 			if(checkIfShipHit(row-2,col-2) == true){
 				return true;
@@ -263,64 +315,32 @@ public class BattleShipBoard {
 		
 		return false;
 	}
-	public boolean checkIfGameOver(){
-		boolean shipSpotsLeft = false;
-		for (int i = 0; i < this.getRowLength(); i++){
-	        for (int j = 0; j < this.getColLength(); j++) {
-	        	if(checkIfShipHit(i, j) == true)
-	        		shipSpotsLeft = true;
+	public boolean checkIfGameOver(){ //returns false if game is not over, true if game is over
+		
+		for (int i = 0; i <= this.colLength; i++){
+	        for (int j = 0; j <= this.rowLength; j++) {
+	        	//System.out.println("This is what the end game is checking" + this.bShipBoard[i][j]);
+	        	if(this.bShipBoard[i][j].equalsIgnoreCase("s")  == true){
+	        		return false;
+	        	}
+	        		
 	        }
 		}
-		if(shipSpotsLeft == true)
-			return false;
+		
 		return true;
 	}
 	public static void main(String[] args){
-		int ships = 0;
-		int mines = 0;
-		int turns = 0;
+		int turns = 0;  // turn counter!
 		
 		boolean gameover = false;
 		boolean validBoardSize = false;
-		System.out.println("Welcome to battleship!");
-		Scanner s = new Scanner(System.in);
+		System.out.println("Welcome to battleship!"); // welcome!
+		Scanner s = new Scanner(System.in);  // not sure if closing the resource is bad or not
 		System.out.println("Please enter the size of the board in whole numbers.  Press enter after the first number is entered");
 		int row = s.nextInt();
 		int col = s.nextInt();
-		/*while(validBoardSize == false){
-			if(row*col < 9){
-				System.out.println("Invalid board size, board too small");
-				System.out.println("Please re-enter the board size");
-				row = s.nextInt();
-				col = s.nextInt();
-				
-			}
-			else if(row*col<16){
-				ships = 1;
-				mines = 1;
-				validBoardSize = true;
-				System.out.println("There is one ship to sink");
-			}
-			else if(row*col < 36){
-				ships = 2;
-				mines = 2;
-				validBoardSize = true;
-				System.out.println("There are two ships to sink");
-			}
-			else if(row*col <=100){
-				ships = 3;
-				mines = 2;
-				validBoardSize = true;
-				System.out.println("There are three ships to sink");
-			}
-			else{
-				System.out.println("Invalid board size, board too large");
-				System.out.println("Please re-enter the board size");
-				row = s.nextInt();
-				col = s.nextInt();
-			}
-		}*/
-		while(validBoardSize == false){
+		
+		while(validBoardSize == false){ //checking for valid board size
 			if(row*col < 9){
 				System.out.println("Invalid board size, board too small");
 				System.out.println("Please re-enter the board size");
@@ -336,12 +356,10 @@ public class BattleShipBoard {
 			else
 				validBoardSize = true;
 		}
-		BattleShipBoard board = new BattleShipBoard(row, col);
-		// empty board created
-		//BattleShipBoard board = new BattleShipBoard(row,col);
+		BattleShipBoard board = new BattleShipBoard(row, col);  // board is initialized  here
 		
-		// debug mode enabled
-		System.out.println("Test/Debug mode? T/F");
+	
+		System.out.println("Test/Debug mode? T/F");  // asking for T or F
 		String test = s.next();
 		if(test.equalsIgnoreCase("T")){
 			board.setDebug("true");
@@ -358,64 +376,60 @@ public class BattleShipBoard {
 		// need to tell the user what the top left and bottom right corner coordinates are
 		System.out.println("The top left coordinares are going to be 0 0, and the bottom right coordinates are going to be " + (row-1) + " " + (col-1));
 		
-		//board setup  - charbel to implement random
-		//board.setBShipBoard(1, 2, "s");
-		//board.setBShipBoard(2, 2, "s");
-		//board.setBShipBoard(3, 2, "s");
-		//board.setBShipBoard(1,0,"m");
-		board.setColLength();
-		board.setRowLength();
 		while (gameover == false){ // starting the turn loop
 			turns++;
-			System.out.println("Please enter the next coordinates: ");
+			System.out.println("Please enter the next coordinates, press enter after entering the first coordinate: ");
 			row = s.nextInt();
 			col = s.nextInt();
-			while(board.insideBoardCheck(row,col) == false){
-				System.out.println("Invalid coordinates, please enter new coordinates");
+			while(board.insideBoardCheck(row,col) == false){ //for invalid coords
+				System.out.println("Invalid coordinates, please enter new coordinates:");
 				row = s.nextInt();
 				col = s.nextInt();
-				System.out.println("row: " + row);
-				System.out.println("Col: "+ col);
-				System.out.println("getRowLength"+ board.getRowLength());
-				System.out.println("getColLength"+ board.getColLength());
-				System.out.println(board.insideBoardCheck(row, col));
 			}
-			if(board.checkRedundantStrike(row,col) ==true){
+			if(board.checkRedundantStrike(row,col) ==true){ //redundant strike
 				System.out.println("You already shot there, what a waste of ammunition!  An extra turn has been added");
 				turns++;
+				board.addRedundantStrike();
 				
 			}
-			else if(board.checkIfShipHit(row,col) == true){
+			else if(board.checkIfShipHit(row,col) == true){ //hitting a ship
 				System.out.println("You hit a ship!");
 				board.setBShipBoard(row, col, "h");
+				board.addHit();
 			}
-			else if(board.checkIfMineHit(row,col) == true){
+			else if(board.checkIfMineHit(row,col) == true){ //hitting a mine
 				System.out.println("You hit a mine!  An extra turn has been added to your score");
 				turns++;
 				board.setBShipBoard(row, col, "h");
+				board.addMiss();
 			}
-			else{
+			else{ // missing!
 				board.setBShipBoard(row, col, "h");
 				System.out.println("You missed");
+				board.addMiss();
+				if(board.checkIfVeryClose(row,col) == true){ //very close
+					System.out.println("But you were very close.");
+				}
+				else if(board.checkIfClose(row,col) == true){ //just close
+					System.out.println("But you were close.");
+				}
 			}
 			
-			if(board.checkIfVeryClose(row,col) == true){
-				System.out.println("But you were very close.");
-			}
-			else if(board.checkIfClose(row,col) == true){
-				System.out.println("But you were close.");
-			}
 			
-			if(board.checkIfGameOver() == true){
+			
+			if(board.checkIfGameOver() == true){ //checking if the game is over after a strike
 				System.out.println("You sunk all the battleships! The game is over!");
 				gameover = true;
 			}
-			System.out.println("Your current hits: " + board.getHits());
-			System.out.println("Your current misses: "+ board.getMisses() );
-			System.out.println("Your current redundant strike count: " + board.getRedundantStrikes());
-			System.out.println("Your turn count: " + turns);
+			else{ //only prints this if the game isn't over
+				System.out.println("Your current hits: " + board.getHits());
+				System.out.println("Your current misses: "+ board.getMisses() );
+				System.out.println("Your current redundant strike count: " + board.getRedundantStrikes());
+				System.out.println("Your turn count: " + turns);
+			}
+			
 				
-		}
+		} //prints the final scores after the game is over
 		System.out.println("Your final hit count: " + board.getHits());
 		System.out.println("Your final miss count: "+ board.getMisses() );
 		System.out.println("Your final redundant strike count: " + board.getRedundantStrikes());
@@ -427,5 +441,4 @@ public class BattleShipBoard {
 		}
 		
 	}
-
 
