@@ -221,6 +221,7 @@ public class BattleShipBoard {
 		if(a.contains("true") == true){
 			this.debug = true;
 			System.out.println("Test/Debug mode enabled");
+			System.out.println("Ships are indicated by 's', and mines are indicated by 'm'");
 			System.out.println(Arrays.deepToString(bShipBoard));
 		}
 		else if (a.contains("false") == true){
